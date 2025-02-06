@@ -39,16 +39,6 @@ function setSwagger(app: INestApplication<any>, logger: Logger) {
 
 async function initServices(app: INestApplication) {
   await app.select(TelegramBotModule).get(TelegramBotService).setupWebhook();
-  const res = await app
-    .select(TelegramBotModule)
-    .get(TelegramBotService)
-    .createInvoiceLink({
-      title: 'Telegram',
-      description: 'Telegram Description',
-      amount: 1,
-      payload: JSON.stringify({ data: 'abc' }),
-    });
-  console.log(res);
 }
 
 async function bootstrap() {

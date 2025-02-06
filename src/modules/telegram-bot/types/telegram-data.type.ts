@@ -7,6 +7,8 @@ export type DataTelegramMessage = DataBaseModel & {
   chat_username?: string;
   chat_type?: string;
   text?: string;
+  is_replied?: boolean;
+  count?: number;
 };
 
 export type DataTelegramTransaction = DataBaseModel & {
@@ -16,4 +18,13 @@ export type DataTelegramTransaction = DataBaseModel & {
   is_solved?: boolean;
   telegram_payment_charge_id?: string;
   provider_payment_charge_id?: string;
+};
+
+export type DataTelegramChannel = DataBaseModel & {
+  user_telegram_id?: number;
+  chat_id?: number;
+  chat_title?: string;
+  chat_username?: string;
+  chat_type?: string;
+  status?: string;
 };

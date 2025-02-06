@@ -11,7 +11,7 @@ export class TelegramMessage {
   @Prop({
     type: Number,
   })
-  from_id: number;
+  from_user_id: number;
 
   @Prop({
     type: Number,
@@ -32,6 +32,18 @@ export class TelegramMessage {
     type: String,
   })
   text: string;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  is_replied: boolean;
+
+  @Prop({
+    type: Number,
+    default: 1,
+  })
+  count: number;
 }
 
 export const TelegramMessageSchema =

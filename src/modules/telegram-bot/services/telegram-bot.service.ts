@@ -60,8 +60,8 @@ export class TelegramBotService {
   async handleUpdate(update: TelegramBotApiUpdateResponse) {
     try {
       switch (true) {
-        case !!update?.message?.successful_payment:
-          await this.telegramDataService.createTelegramTransactionDocument({
+        case !!update?.message?.successful_payment: // CASE PAYMENT STAR
+          await this.telegramDataService.upsertTelegramTransactionDocument({
             user_telegram_id: update?.message?.from?.id,
             total_amount: update?.message?.successful_payment?.total_amount,
             invoice_payload:
@@ -74,15 +74,25 @@ export class TelegramBotService {
           });
           // SOLVE ORDER
           break;
-        case !!update?.pre_checkout_query:
+        case !!update?.pre_checkout_query: // CASE ALLOW PRE CHECKOUT QUERY PAYMENT STAR
           await this.telegramBotApiService.answerPreCheckoutQuery({
             pre_checkout_query_id: update?.pre_checkout_query?.id,
             ok: true,
             error_message: 'Payment required',
           });
           break;
-        case !!update?.message:
-          await this.telegramDataService.createTelegramMessageDocument({
+        case !!update?.chat_member: // CASE JOIN/LEFT GROUP/CHANNEL
+          await this.telegramDataService.upsertTelegramChannelDocument({
+            user_telegram_id: update?.chat_member.new_chat_member.user?.id,
+            chat_id: update?.chat_member?.chat?.id,
+            chat_title: update?.chat_member?.chat?.title,
+            chat_username: update?.chat_member?.chat?.username,
+            chat_type: update?.chat_member?.chat?.type,
+            status: update?.chat_member?.new_chat_member?.status,
+          });
+          break;
+        case !!update?.message?.text: // CASE NORMAL MESSAGE
+          await this.telegramDataService.upsertTelegramMessageDocument({
             chat_id: update?.message?.chat?.id,
             from_user_id: update?.message?.from?.id,
             text: update?.message?.text,

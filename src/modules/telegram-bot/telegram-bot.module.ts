@@ -13,6 +13,10 @@ import {
   TelegramTransaction,
   TelegramTransactionSchema,
 } from './models/telegram-transaction.model';
+import {
+  TelegramChannel,
+  TelegramChannelSchema,
+} from './models/telegram-channel.model';
 
 @Module({
   imports: [
@@ -24,6 +28,10 @@ import {
       {
         name: TelegramTransaction.name,
         schema: TelegramTransactionSchema,
+      },
+      {
+        name: TelegramChannel.name,
+        schema: TelegramChannelSchema,
       },
     ]),
     HttpModule,

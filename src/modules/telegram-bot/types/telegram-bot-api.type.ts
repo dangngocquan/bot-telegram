@@ -154,7 +154,7 @@ export type TelegramBotApiUpdateResponse = {
   edited_channel_post?: TelegramBotApiMessageResponse;
   pre_checkout_query?: TelegramBotApiPreCheckoutQueryResponse;
   my_chat_member?: any;
-  chat_member?: any;
+  chat_member?: TelegramBotApiChatMemberUpdatedResponse;
   chat_join_request?: any;
   chat_boost?: any;
   removed_chat_boost?: any;
