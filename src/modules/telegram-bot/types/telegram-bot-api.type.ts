@@ -145,6 +145,65 @@ export type TelegramBotApiMessageResponse = {
   successful_payment?: TelegramBotApiSuccessfulPaymentResponse;
 };
 
+export type TelegramBotApiSendMessageRequest = {
+  chat_id: number | string;
+  text: string;
+  parse_mode?: string;
+  link_preview_options?: {
+    is_disabled?: boolean;
+    url?: string;
+  };
+  reply_markup?: {
+    inline_keyboard: Array<
+      Array<{
+        text?: string;
+        web_app?: string;
+        url?: string;
+      }>
+    >;
+  };
+};
+
+export type TelegramBotApiSendPhotoRequest = {
+  chat_id: number | string;
+  photo: string;
+  caption?: string;
+  parse_mode?: string;
+  link_preview_options?: {
+    is_disabled?: boolean;
+    url?: string;
+  };
+  reply_markup?: {
+    inline_keyboard: Array<
+      Array<{
+        text?: string;
+        web_app?: string;
+        url?: string;
+      }>
+    >;
+  };
+};
+
+export type TelegramBotApiSendAnimationRequest = {
+  chat_id: number | string;
+  animation: string;
+  caption?: string;
+  parse_mode?: string;
+  link_preview_options?: {
+    is_disabled?: boolean;
+    url?: string;
+  };
+  reply_markup?: {
+    inline_keyboard: Array<
+      Array<{
+        text?: string;
+        web_app?: string;
+        url?: string;
+      }>
+    >;
+  };
+};
+
 // UPDATE
 export type TelegramBotApiUpdateResponse = {
   update_id: number;

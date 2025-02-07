@@ -10,6 +10,9 @@ import {
   TelegramBotApiCreateInvoiceLinkResponse,
   TelegramBotApiDeleteWebhookRequest,
   TelegramBotApiDeleteWebhookResponse,
+  TelegramBotApiSendAnimationRequest,
+  TelegramBotApiSendMessageRequest,
+  TelegramBotApiSendPhotoRequest,
   TelegramBotApiSetWebhookRequest,
   TelegramBotApiSetWebhookResponse,
   TelegramBotApiWebhookInfoResponse,
@@ -137,5 +140,32 @@ export class TelegramBotApiService {
     >('answerPreCheckoutQuery', {
       ...data,
     });
+  }
+
+  async sendMessage(data: TelegramBotApiSendMessageRequest) {
+    return await this.callApiTelegram<any, TelegramBotApiSendMessageRequest>(
+      'sendMessage',
+      {
+        ...data,
+      },
+    );
+  }
+
+  async sendPhoto(data: TelegramBotApiSendPhotoRequest) {
+    return await this.callApiTelegram<any, TelegramBotApiSendPhotoRequest>(
+      'sendPhoto',
+      {
+        ...data,
+      },
+    );
+  }
+
+  async sendAnimation(data: TelegramBotApiSendAnimationRequest) {
+    return await this.callApiTelegram<any, TelegramBotApiSendAnimationRequest>(
+      'sendAnimation',
+      {
+        ...data,
+      },
+    );
   }
 }

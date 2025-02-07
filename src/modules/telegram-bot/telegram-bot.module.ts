@@ -17,6 +17,10 @@ import {
   TelegramChannel,
   TelegramChannelSchema,
 } from './models/telegram-channel.model';
+import {
+  TelegramNotification,
+  TelegramNotificationSchema,
+} from './models/telegram-notification.model';
 
 @Module({
   imports: [
@@ -32,6 +36,10 @@ import {
       {
         name: TelegramChannel.name,
         schema: TelegramChannelSchema,
+      },
+      {
+        name: TelegramNotification.name,
+        schema: TelegramNotificationSchema,
       },
     ]),
     HttpModule,

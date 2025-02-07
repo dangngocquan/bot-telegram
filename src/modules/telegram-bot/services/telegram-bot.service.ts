@@ -4,6 +4,10 @@ import { TelegramBotApiService } from './telegram-bot-api.service';
 import { DataTelegramInvoiceLink } from '../types/telegram-bot.type';
 import { TelegramBotApiUpdateResponse } from '../types/telegram-bot-api.type';
 import { TelegramDataService } from './telegram-data.service';
+import {
+  DataTelegramNotification,
+  EMediaType,
+} from '../types/telegram-data.type';
 
 @Injectable()
 export class TelegramBotService {
@@ -104,6 +108,57 @@ export class TelegramBotService {
       }
     } catch (error) {
       this.logger.error(`[handleUpdate] ${error}`);
+    }
+  }
+
+  async handleNotification(data: DataTelegramNotification) {
+    try {
+      const payload = {
+        chat_id: data.telegram_id,
+        parse_mode: 'HTML',
+        link_preview_options: {
+          is_disabled: true,
+        },
+        reply_markup: {
+          inline_keyboard: data.buttons.map((rows) =>
+            rows.map((r) => {
+              const obj = {
+                text: r.text,
+              };
+              if (r.web_app) {
+                obj['web_app'] = r.web_app;
+              } else if (r.url) {
+                obj['url'] = r.url;
+              }
+              return obj;
+            }),
+          ),
+        },
+      };
+      switch (data.mediaType) {
+        case EMediaType.PHOTO:
+          await this.telegramBotApiService.sendPhoto({
+            ...payload,
+            photo: data.media,
+            caption: data.content,
+          });
+          break;
+        case EMediaType.ANIMATION:
+          await this.telegramBotApiService.sendAnimation({
+            ...payload,
+            animation: data.media,
+            caption: data.content,
+          });
+          break;
+        default:
+          await this.telegramBotApiService.sendMessage({
+            ...payload,
+            text: data.content,
+          });
+          break;
+      }
+    } catch (error) {
+      this.logger.error(`[handleNotification] ${error}`);
     }
   }
 }

@@ -12,12 +12,18 @@ import {
 import {
   DataTelegramChannel,
   DataTelegramMessage,
+  DataTelegramNotification,
   DataTelegramTransaction,
+  ETelegramNotificationStatus,
 } from '../types/telegram-data.type';
 import {
   TelegramChannel,
   TelegramChannelDocument,
 } from '../models/telegram-channel.model';
+import {
+  TelegramNotification,
+  TelegramNotificationDocument,
+} from '../models/telegram-notification.model';
 
 @Injectable()
 export class TelegramDataService {
@@ -30,6 +36,8 @@ export class TelegramDataService {
     private readonly telegramTransactionModel: Model<TelegramTransactionDocument>,
     @InjectModel(TelegramChannel.name)
     private readonly telegramChannelModel: Model<TelegramChannelDocument>,
+    @InjectModel(TelegramNotification.name)
+    private readonly telegramNotificationModel: Model<TelegramNotificationDocument>,
   ) {}
 
   // Telegram Message
@@ -176,6 +184,79 @@ export class TelegramDataService {
     } catch (error) {
       this.logger.error(
         `[upsertTelegramChannelDocument] ${JSON.stringify({ data, error })}`,
+      );
+      result.isBadRequest = true;
+      result.message = `${error}`;
+    }
+    return result;
+  }
+
+  // Telegram Notification
+  async getPendingTelegramNotifications(limit: number): Promise<{
+    notifications: Array<DataTelegramNotification>;
+    limit: number;
+    count: number;
+  }> {
+    const result: {
+      notifications: Array<DataTelegramNotification>;
+      limit: number;
+      count: number;
+    } = {
+      notifications: [],
+      limit,
+      count: 0,
+    };
+    try {
+      result.notifications = await this.telegramNotificationModel
+        .find({
+          status: ETelegramNotificationStatus.PENDING,
+        })
+        .sort({ priority: -1 })
+        .limit(limit)
+        .exec();
+      result.count = result.notifications.length;
+    } catch (error) {
+      this.logger.error(
+        `[getPendingTelegramNotifications] ${JSON.stringify({ error, limit })}`,
+      );
+    }
+    return result;
+  }
+
+  async upsertTelegramNotificationDocument(data: DataTelegramNotification) {
+    const result: {
+      isBadRequest: boolean;
+      message: string;
+      document: TelegramNotificationDocument;
+    } = {
+      isBadRequest: false,
+      message: '',
+      document: null,
+    };
+    try {
+      if (data._id) {
+        await this.telegramNotificationModel.updateOne(
+          {
+            _id: new Types.ObjectId(data._id),
+          },
+          {
+            $set: {
+              status: data.status ?? ETelegramNotificationStatus.PENDING,
+              metadata: data.metadata,
+            },
+          },
+        );
+        result.document = await this.telegramNotificationModel.findOne({
+          _id: data._id,
+        });
+      } else {
+        result.document = await this.telegramNotificationModel.create({
+          ...data,
+        });
+      }
+    } catch (error) {
+      this.logger.error(
+        `[upsertTelegramNotificationDocument] ${JSON.stringify({ data, error })}`,
       );
       result.isBadRequest = true;
       result.message = `${error}`;
