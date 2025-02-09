@@ -6,6 +6,7 @@ export interface AppConfig {
   nodeEnv: string;
   adminPassword: string;
   apiUrl: string;
+  process: string;
 }
 
 export default registerAs<AppConfig>('app', () => ({
@@ -14,4 +15,5 @@ export default registerAs<AppConfig>('app', () => ({
   nodeEnv: process.env.APP_NODE_ENV || 'development',
   adminPassword: process.env.APP_ADMIN_PASSWORD || 'no-password',
   apiUrl: process.env.API_URL || 'http://localhost:3000',
+  process: process.env.PROCESS || 'BOT_API',
 }));

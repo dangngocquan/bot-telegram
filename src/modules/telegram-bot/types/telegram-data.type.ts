@@ -4,6 +4,7 @@ export enum ETelegramNotificationStatus {
   PENDING = 'PENDING',
   FAILED = 'FAILED',
   SUCCEEDED = 'SUCCEEDED',
+  PROCESSING = 'PROCESSING',
 }
 
 export enum EMediaType {
@@ -39,13 +40,14 @@ export type DataTelegramChannel = DataBaseModel & {
   chat_username?: string;
   chat_type?: string;
   status?: string;
+  is_solved?: boolean;
 };
 
 export type DataTelegramNotification = DataBaseModel & {
   media?: string;
   buttons?: Array<Array<DataTelegramNotificationButton>>;
-  content: string;
-  telegram_id: number;
+  content?: string;
+  telegram_id?: number;
   startAt?: Date;
   priority?: number;
   status?: ETelegramNotificationStatus;

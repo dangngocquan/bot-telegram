@@ -3,9 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
 import { TelegramBotService } from './modules/telegram-bot/services/telegram-bot.service';
-import { TelegramDataService } from './modules/telegram-bot/services/telegram-data.service';
+import { TelegramBotModule } from './modules/telegram-bot/telegram-bot.module';
 
 function setGlobalPrefix(app: INestApplication<any>, logger: Logger) {
   logger.debug(`[setGlobalPrefix] Start set global prefix ...`);
@@ -40,16 +39,6 @@ function setSwagger(app: INestApplication<any>, logger: Logger) {
 
 async function initServices(app: INestApplication) {
   await app.select(TelegramBotModule).get(TelegramBotService).setupWebhook();
-  const array = await app
-    .select(TelegramBotModule)
-    .get(TelegramDataService)
-    .getPendingTelegramNotifications(3);
-  console.log(array);
-  const r = await app
-    .select(TelegramBotModule)
-    .get(TelegramBotService)
-    .handleNotification(array.notifications[0]);
-  console.log(r);
 }
 
 async function bootstrap() {

@@ -170,6 +170,7 @@ export class TelegramDataService {
           {
             $set: {
               status: data.status,
+              is_solved: data.is_solved ?? false,
             },
           },
         );
@@ -215,6 +216,18 @@ export class TelegramDataService {
         .limit(limit)
         .exec();
       result.count = result.notifications.length;
+      if (result.count > 0) {
+        await this.telegramNotificationModel.updateMany(
+          {
+            _id: { $in: result.notifications.map((m) => m._id) },
+          },
+          {
+            $set: {
+              status: ETelegramNotificationStatus.PROCESSING,
+            },
+          },
+        );
+      }
     } catch (error) {
       this.logger.error(
         `[getPendingTelegramNotifications] ${JSON.stringify({ error, limit })}`,

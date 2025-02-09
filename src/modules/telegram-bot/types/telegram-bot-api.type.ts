@@ -204,6 +204,11 @@ export type TelegramBotApiSendAnimationRequest = {
   };
 };
 
+export type TelegramBotApiSendMediaResponse = {
+  ok?: boolean;
+  result?: any;
+};
+
 // UPDATE
 export type TelegramBotApiUpdateResponse = {
   update_id: number;

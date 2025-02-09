@@ -40,6 +40,12 @@ export class TelegramChannel {
     default: 'member',
   })
   status: string;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  is_solved: boolean;
 }
 
 export const TelegramChannelSchema =

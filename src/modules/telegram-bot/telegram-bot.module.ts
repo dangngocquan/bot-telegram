@@ -21,9 +21,16 @@ import {
   TelegramNotification,
   TelegramNotificationSchema,
 } from './models/telegram-notification.model';
+import botApiConfig from 'src/modules/telegram-bot/configs/bot-api.config';
+import botChannelConfig from 'src/modules/telegram-bot/configs/bot-channel.config';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [botApiConfig, botChannelConfig],
+    }),
     MongooseModule.forFeature([
       {
         name: TelegramMessage.name,

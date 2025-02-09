@@ -1,12 +1,22 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { sleep } from 'src/common/sleep';
 import { TelegramBotApiService } from './telegram-bot-api.service';
-import { DataTelegramInvoiceLink } from '../types/telegram-bot.type';
-import { TelegramBotApiUpdateResponse } from '../types/telegram-bot-api.type';
+import {
+  DataTelegramApiResponse,
+  DataTelegramInvoiceLink,
+} from '../types/telegram-bot.type';
+import {
+  TelegramBotApiSendAnimationRequest,
+  TelegramBotApiSendMediaResponse,
+  TelegramBotApiSendMessageRequest,
+  TelegramBotApiSendPhotoRequest,
+  TelegramBotApiUpdateResponse,
+} from '../types/telegram-bot-api.type';
 import { TelegramDataService } from './telegram-data.service';
 import {
   DataTelegramNotification,
   EMediaType,
+  ETelegramNotificationStatus,
 } from '../types/telegram-data.type';
 
 @Injectable()
@@ -23,7 +33,14 @@ export class TelegramBotService {
       await this.telegramBotApiService.deleteWebhook();
       let countRetry = 0;
       while (countRetry < 5) {
-        const setupResult = await this.telegramBotApiService.setWebhook();
+        const setupResult = await this.telegramBotApiService.setWebhook([
+          'message',
+          'pre_checkout_query',
+          'my_chat_member	',
+          'chat_member',
+          'chat_boost',
+          'removed_chat_boost',
+        ]);
         if (setupResult.response != null) {
           this.logger.debug(
             `[setupWebhook] Setup webhook successfully, ${JSON.stringify({ setupResult })}`,
@@ -112,6 +129,13 @@ export class TelegramBotService {
   }
 
   async handleNotification(data: DataTelegramNotification) {
+    let result: DataTelegramApiResponse<
+      | TelegramBotApiSendMessageRequest
+      | TelegramBotApiSendPhotoRequest
+      | TelegramBotApiSendAnimationRequest,
+      TelegramBotApiSendMediaResponse
+    >;
+    data.content = new Date().toISOString();
     try {
       const payload = {
         chat_id: data.telegram_id,
@@ -137,21 +161,21 @@ export class TelegramBotService {
       };
       switch (data.mediaType) {
         case EMediaType.PHOTO:
-          await this.telegramBotApiService.sendPhoto({
+          result = await this.telegramBotApiService.sendPhoto({
             ...payload,
             photo: data.media,
             caption: data.content,
           });
           break;
         case EMediaType.ANIMATION:
-          await this.telegramBotApiService.sendAnimation({
+          result = await this.telegramBotApiService.sendAnimation({
             ...payload,
             animation: data.media,
             caption: data.content,
           });
           break;
         default:
-          await this.telegramBotApiService.sendMessage({
+          result = await this.telegramBotApiService.sendMessage({
             ...payload,
             text: data.content,
           });
@@ -160,5 +184,14 @@ export class TelegramBotService {
     } catch (error) {
       this.logger.error(`[handleNotification] ${error}`);
     }
+    if (result) {
+      this.telegramDataService.upsertTelegramNotificationDocument({
+        _id: data._id,
+        status: result?.isBadRequest
+          ? ETelegramNotificationStatus.FAILED
+          : ETelegramNotificationStatus.SUCCEEDED,
+      });
+    }
+    return result;
   }
 }

@@ -2,7 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
-import { RedisConfig } from 'src/configs/redis.config';
+import { RedisConfig } from 'src/modules/redis/redis.config';
 
 @Injectable()
 export class RedisService {
