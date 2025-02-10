@@ -20,7 +20,7 @@ export type DataTelegramMessage = DataBaseModel & {
   chat_username?: string;
   chat_type?: string;
   text?: string;
-  is_replied?: boolean;
+  is_solved?: boolean;
   count?: number;
 };
 

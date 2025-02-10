@@ -43,13 +43,14 @@ export class TelegramNotification {
   @Prop({ type: Date, default: new Date() })
   startAt: Date;
 
-  @Prop({ type: Number, default: 1 })
+  @Prop({ type: Number, default: 1, index: true })
   priority: number;
 
   @Prop({
     type: String,
     default: ETelegramNotificationStatus.PENDING,
     enum: ETelegramNotificationStatus,
+    index: true,
   })
   status: ETelegramNotificationStatus;
 
@@ -67,6 +68,8 @@ export class TelegramNotification {
 export type TelegramNotificationDocument = TelegramNotification &
   Document & {
     _id: Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
   };
 
 export const TelegramNotificationSchema =

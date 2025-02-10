@@ -41,6 +41,48 @@ export class TelegramDataService {
   ) {}
 
   // Telegram Message
+  async getPendingTelegramMessages(limit: number): Promise<{
+    messages: Array<DataTelegramMessage>;
+    limit: number;
+    count: number;
+  }> {
+    const result: {
+      messages: Array<DataTelegramMessage>;
+      limit: number;
+      count: number;
+    } = {
+      messages: [],
+      limit,
+      count: 0,
+    };
+    try {
+      result.messages = await this.telegramMessageModel
+        .find({
+          is_solved: false,
+        })
+        .limit(limit)
+        .exec();
+      result.count = result.messages.length;
+      if (result.count > 0) {
+        await this.telegramMessageModel.updateMany(
+          {
+            _id: { $in: result.messages.map((m) => m._id) },
+          },
+          {
+            $set: {
+              is_solved: true,
+            },
+          },
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `[getPendingTelegramMessages] ${JSON.stringify({ error, limit })}`,
+      );
+    }
+    return result;
+  }
+
   async upsertTelegramMessageDocument(data: DataTelegramMessage) {
     const result: {
       isBadRequest: boolean;
@@ -59,7 +101,7 @@ export class TelegramDataService {
           },
           {
             $set: {
-              is_replied: data.is_replied ?? false,
+              is_solved: data.is_solved ?? false,
             },
           },
         );
@@ -70,7 +112,7 @@ export class TelegramDataService {
         const existed = await this.telegramMessageModel.findOne({
           from_user_id: data.from_user_id,
           text: data.text,
-          is_replied: false,
+          is_solved: false,
         });
         if (existed) {
           await this.telegramMessageModel.updateOne(
@@ -89,7 +131,7 @@ export class TelegramDataService {
         } else {
           result.document = await this.telegramMessageModel.create({
             ...data,
-            is_replied: false,
+            is_solved: false,
             count: 1,
           });
         }

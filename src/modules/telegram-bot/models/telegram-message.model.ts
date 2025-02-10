@@ -10,6 +10,7 @@ export class TelegramMessage {
 
   @Prop({
     type: Number,
+    index: true,
   })
   from_user_id: number;
 
@@ -30,14 +31,16 @@ export class TelegramMessage {
 
   @Prop({
     type: String,
+    index: true,
   })
   text: string;
 
   @Prop({
     type: Boolean,
     default: false,
+    index: true,
   })
-  is_replied: boolean;
+  is_solved: boolean;
 
   @Prop({
     type: Number,

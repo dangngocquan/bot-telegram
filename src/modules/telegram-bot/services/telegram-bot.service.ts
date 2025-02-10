@@ -135,7 +135,6 @@ export class TelegramBotService {
       | TelegramBotApiSendAnimationRequest,
       TelegramBotApiSendMediaResponse
     >;
-    data.content = new Date().toISOString();
     try {
       const payload = {
         chat_id: data.telegram_id,
@@ -190,6 +189,9 @@ export class TelegramBotService {
         status: result?.isBadRequest
           ? ETelegramNotificationStatus.FAILED
           : ETelegramNotificationStatus.SUCCEEDED,
+        metadata: {
+          error: result?.message,
+        },
       });
     }
     return result;
